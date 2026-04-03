@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Builder | The Wandering Quill Tavern</title>
+    <meta name="description"
+      content="Build and manage D&D 5e characters with The Wandering Quill Tavern — a free, no-account character builder and party tracker.">
+    <meta name="author" content="Nicholas Nixon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap"
+      rel="stylesheet">
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/character.css">
+
+    <script type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="nav-logo" href="index.html">The Wandering Quill Tavern</a>
+        <ul class="nav-links" role="list">
+          <li><a href="index.html" class="nav-link nav-link--active"
+              aria-current="page">Builder</a></li>
+          <li><a href="party.html" class="nav-link">Party</a></li>
+          <li><a href="reference.html" class="nav-link">Reference</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="character-builder">
+      <div class="builder-layout">
+
+      <section class="builder-form-col">
+        <h1 class="builder-title">Create Your Character</h1>
+
+        <form id="character-form" class="character-form card" novalidate>
+
+          <!-- Character Name -->
+          <div class="form-group">
+            <label class="form-label" for="char-name">Character Name</label>
+            <input class="form-input" type="text" id="char-name" name="name"
+                   required minlength="2" maxlength="30" placeholder="Enter a name…">
+            <span class="form-error" aria-live="polite"></span>
+          </div>
+
+          <!-- Class & Race -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="char-class">Class</label>
+              <select class="form-select" id="char-class" name="classIndex" required disabled>
+                <option value="">Loading classes…</option>
+              </select>
+              <span class="form-error" aria-live="polite"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="char-race">Race</label>
+              <select class="form-select" id="char-race" name="raceIndex" required disabled>
+                <option value="">Loading races…</option>
+              </select>
+              <span class="form-error" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <!-- Level -->
+          <div class="form-group form-group--narrow">
+            <label class="form-label" for="char-level">Level</label>
+            <input class="form-input" type="number" id="char-level" name="level"
+                   required min="1" max="20" value="1">
+            <span class="form-error" aria-live="polite"></span>
+          </div>
+
+          <!-- Ability Scores -->
+          <fieldset class="ability-fieldset">
+            <legend class="form-label">Ability Scores</legend>
+            <div class="ability-grid">
+              <div class="form-group">
+                <label class="form-label" for="score-str">STR</label>
+                <input class="form-input ability-input" type="number" id="score-str" name="str"
+                       required min="1" max="20" value="10">
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="score-dex">DEX</label>
+                <input class="form-input ability-input" type="number" id="score-dex" name="dex"
+                       required min="1" max="20" value="10">
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="score-con">CON</label>
+                <input class="form-input ability-input" type="number" id="score-con" name="con"
+                       required min="1" max="20" value="10">
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="score-int">INT</label>
+                <input class="form-input ability-input" type="number" id="score-int" name="int"
+                       required min="1" max="20" value="10">
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="score-wis">WIS</label>
+                <input class="form-input ability-input" type="number" id="score-wis" name="wis"
+                       required min="1" max="20" value="10">
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="score-cha">CHA</label>
+                <input class="form-input ability-input" type="number" id="score-cha" name="cha"
+                       required min="1" max="20" value="10">
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Submit -->
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Add to Party</button>
+          </div>
+
+        </form>
+      </section>
+
+      <aside class="builder-preview-col">
+        <h1 class="builder-title">Live View</h1>
+        <div id="preview-container" class="preview-container">
+          <p class="preview-empty">Fill in the form to see your character take shape.</p>
+        </div>
+      </aside>
+
+      </div><!-- /.builder-layout -->
+    </main>
+
+    <template id="character-preview-card">
+      <article class="preview-card card animate-fade-in">
+        <header class="preview-card__header">
+          <h2 class="preview-card__name"></h2>
+          <div class="preview-card__badges">
+            <span class="badge preview-card__class"></span>
+            <span class="badge preview-card__race"></span>
+            <span class="badge preview-card__level"></span>
+          </div>
+        </header>
+
+        <div class="preview-card__hit-die">
+          <span class="preview-card__hit-die-label">Hit Die</span>
+          <span class="preview-card__hit-die-value"></span>
+        </div>
+
+        <section class="preview-card__scores">
+          <h3 class="preview-card__section-title">Ability Scores</h3>
+          <div class="preview-score-grid">
+            <div class="preview-score" data-ability="str">
+              <span class="preview-score__label">STR</span>
+              <span class="preview-score__value"></span>
+              <span class="preview-score__mod"></span>
+            </div>
+            <div class="preview-score" data-ability="dex">
+              <span class="preview-score__label">DEX</span>
+              <span class="preview-score__value"></span>
+              <span class="preview-score__mod"></span>
+            </div>
+            <div class="preview-score" data-ability="con">
+              <span class="preview-score__label">CON</span>
+              <span class="preview-score__value"></span>
+              <span class="preview-score__mod"></span>
+            </div>
+            <div class="preview-score" data-ability="int">
+              <span class="preview-score__label">INT</span>
+              <span class="preview-score__value"></span>
+              <span class="preview-score__mod"></span>
+            </div>
+            <div class="preview-score" data-ability="wis">
+              <span class="preview-score__label">WIS</span>
+              <span class="preview-score__value"></span>
+              <span class="preview-score__mod"></span>
+            </div>
+            <div class="preview-score" data-ability="cha">
+              <span class="preview-score__label">CHA</span>
+              <span class="preview-score__value"></span>
+              <span class="preview-score__mod"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="preview-card__saves">
+          <h3 class="preview-card__section-title">Saving Throws</h3>
+          <ul class="preview-saves-list"></ul>
+        </section>
+      </article>
+    </template>
+
+  </body>
+</html>

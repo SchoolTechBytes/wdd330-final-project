@@ -1,0 +1,252 @@
+/* ==========================================================================
+   character.css — Styles for View 1: Character Builder (index.html)
+   Includes: character form, ability score grid, live preview card, spell panel
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Builder Layout (two-column: form | preview)
+   -------------------------------------------------------------------------- */
+.builder-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.builder-form-col {
+  min-width: 0; /* prevent grid blowout on narrow viewports */
+}
+
+.builder-title {
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+/* Sticky preview column */
+.builder-preview-col {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-4));
+}
+
+/* --------------------------------------------------------------------------
+   Character Form
+   -------------------------------------------------------------------------- */
+.character-form {
+  padding: var(--space-8);
+}
+
+/* Two-column row (Class + Race) */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+/* Narrow single field (Level) */
+.form-group--narrow {
+  max-width: 140px;
+}
+
+/* --------------------------------------------------------------------------
+   Ability Scores (form)
+   -------------------------------------------------------------------------- */
+.ability-fieldset {
+  border: none;
+  padding: 0;
+  margin-bottom: var(--space-4);
+}
+
+.ability-fieldset legend {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--space-3);
+}
+
+.ability-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-3);
+}
+
+.ability-grid .form-group {
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.ability-grid .form-label {
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Submit Row
+   -------------------------------------------------------------------------- */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* --------------------------------------------------------------------------
+   Preview — Empty State
+   -------------------------------------------------------------------------- */
+.preview-container {
+  min-height: 120px;
+}
+
+.preview-empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  border: var(--border-width) dashed var(--color-worn-oak);
+  border-radius: var(--radius-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Preview Card
+   -------------------------------------------------------------------------- */
+.preview-card {
+  padding: var(--space-6);
+}
+
+.preview-card__header {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.preview-card__name {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-2);
+  word-break: break-word;
+}
+
+.preview-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Hit die row */
+.preview-card__hit-die {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.preview-card__hit-die-label {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.preview-card__hit-die-value {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* Section titles inside preview */
+.preview-card__section-title {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+  letter-spacing: 0.05em;
+}
+
+/* Ability score cells (3×2 grid) */
+.preview-score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.preview-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-shadow-corner);
+  border: var(--border-width) solid var(--color-worn-oak);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-1);
+  text-align: center;
+}
+
+.preview-score__label {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+}
+
+.preview-score__value {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.preview-score__mod {
+  font-size: var(--font-size-sm);
+  color: var(--color-accent);
+}
+
+/* Saving throws */
+.preview-card__saves {
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.preview-saves-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.preview-saves-list li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .builder-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .builder-preview-col {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group--narrow {
+    max-width: 100%;
+  }
+
+  .ability-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .character-form {
+    padding: var(--space-6) var(--space-4);
+  }
+}
