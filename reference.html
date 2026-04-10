@@ -33,7 +33,142 @@
     </header>
 
     <main id="reference-browser">
-      <!-- Reference Browser content rendered here by ui.js -->
+      <div class="ref-tabs" role="tablist" aria-label="Reference categories">
+        <button class="ref-tab" role="tab" aria-selected="false"
+          aria-controls="panel-spells" id="tab-spells" data-tab="spells">Spells</button>
+        <button class="ref-tab" role="tab" aria-selected="false"
+          aria-controls="panel-monsters" id="tab-monsters" data-tab="monsters">Monsters</button>
+        <button class="ref-tab" role="tab" aria-selected="false"
+          aria-controls="panel-items" id="tab-items" data-tab="items">Magic Items</button>
+      </div>
+
+      <section class="ref-panel" role="tabpanel" id="panel-spells"
+        aria-labelledby="tab-spells" hidden>
+        <div class="ref-filter-bar">
+          <input class="form-input ref-search" id="search-spells" type="search"
+            placeholder="Search spells…" aria-label="Search spells">
+          <select class="form-select ref-filter" id="filter-spell-level" aria-label="Filter by level">
+            <option value="">All Levels</option>
+            <option value="0">Cantrip</option>
+            <option value="1">1st</option>
+            <option value="2">2nd</option>
+            <option value="3">3rd</option>
+            <option value="4">4th</option>
+            <option value="5">5th</option>
+            <option value="6">6th</option>
+            <option value="7">7th</option>
+            <option value="8">8th</option>
+            <option value="9">9th</option>
+          </select>
+          <select class="form-select ref-filter" id="filter-spell-school" aria-label="Filter by school">
+            <option value="">All Schools</option>
+            <option value="abjuration">Abjuration</option>
+            <option value="conjuration">Conjuration</option>
+            <option value="divination">Divination</option>
+            <option value="enchantment">Enchantment</option>
+            <option value="evocation">Evocation</option>
+            <option value="illusion">Illusion</option>
+            <option value="necromancy">Necromancy</option>
+            <option value="transmutation">Transmutation</option>
+          </select>
+          <select class="form-select ref-filter" id="filter-spell-class" aria-label="Filter by class">
+            <option value="">All Classes</option>
+            <option value="Barbarian">Barbarian</option>
+            <option value="Bard">Bard</option>
+            <option value="Cleric">Cleric</option>
+            <option value="Druid">Druid</option>
+            <option value="Fighter">Fighter</option>
+            <option value="Monk">Monk</option>
+            <option value="Paladin">Paladin</option>
+            <option value="Ranger">Ranger</option>
+            <option value="Rogue">Rogue</option>
+            <option value="Sorcerer">Sorcerer</option>
+            <option value="Warlock">Warlock</option>
+            <option value="Wizard">Wizard</option>
+          </select>
+        </div>
+        <div class="ref-results" id="results-spells"
+          aria-live="polite" aria-label="Spell results"></div>
+        <div class="ref-load-more" id="load-more-spells" hidden>
+          <button class="btn btn--ghost" id="load-more-spells-btn">Load More Spells</button>
+        </div>
+      </section>
+
+      <section class="ref-panel" role="tabpanel" id="panel-monsters"
+        aria-labelledby="tab-monsters" hidden>
+        <div class="ref-filter-bar">
+          <input class="form-input ref-search" id="search-monsters" type="search"
+            placeholder="Search monsters…" aria-label="Search monsters">
+          <select class="form-select ref-filter" id="filter-monster-type" aria-label="Filter by type">
+            <option value="">All Types</option>
+            <option value="aberration">Aberration</option>
+            <option value="beast">Beast</option>
+            <option value="celestial">Celestial</option>
+            <option value="construct">Construct</option>
+            <option value="dragon">Dragon</option>
+            <option value="elemental">Elemental</option>
+            <option value="fey">Fey</option>
+            <option value="fiend">Fiend</option>
+            <option value="giant">Giant</option>
+            <option value="humanoid">Humanoid</option>
+            <option value="monstrosity">Monstrosity</option>
+            <option value="ooze">Ooze</option>
+            <option value="plant">Plant</option>
+            <option value="undead">Undead</option>
+          </select>
+          <div class="ref-cr-range">
+            <label class="form-label" for="filter-cr-min">CR</label>
+            <input class="form-input ref-cr-input" id="filter-cr-min" type="number"
+              min="0" max="30" step="1" placeholder="Min" aria-label="Minimum challenge rating">
+            <span class="ref-cr-sep">–</span>
+            <input class="form-input ref-cr-input" id="filter-cr-max" type="number"
+              min="0" max="30" step="1" placeholder="Max" aria-label="Maximum challenge rating">
+          </div>
+        </div>
+        <div class="ref-pagination" id="monster-pagination" hidden>
+          <button class="btn btn--ghost" id="monster-prev-btn" aria-label="Previous page" disabled>← Prev</button>
+          <span class="ref-page-info" id="monster-page-info"></span>
+          <button class="btn btn--ghost" id="monster-next-btn" aria-label="Next page">Next →</button>
+        </div>
+        <div class="ref-results" id="results-monsters"
+          aria-live="polite" aria-label="Monster results"></div>
+      </section>
+
+      <section class="ref-panel" role="tabpanel" id="panel-items"
+        aria-labelledby="tab-items" hidden>
+        <div class="ref-filter-bar">
+          <input class="form-input ref-search" id="search-items" type="search"
+            placeholder="Search magic items…" aria-label="Search magic items">
+          <select class="form-select ref-filter" id="filter-item-rarity" aria-label="Filter by rarity">
+            <option value="">All Rarities</option>
+            <option value="common">Common</option>
+            <option value="uncommon">Uncommon</option>
+            <option value="rare">Rare</option>
+            <option value="very rare">Very Rare</option>
+            <option value="legendary">Legendary</option>
+            <option value="artifact">Artifact</option>
+          </select>
+          <select class="form-select ref-filter" id="filter-item-type" aria-label="Filter by type">
+            <option value="">All Types</option>
+            <option value="Armor">Armor</option>
+            <option value="Potion">Potion</option>
+            <option value="Ring">Ring</option>
+            <option value="Rod">Rod</option>
+            <option value="Scroll">Scroll</option>
+            <option value="Staff">Staff</option>
+            <option value="Wand">Wand</option>
+            <option value="Weapon">Weapon</option>
+            <option value="Wondrous Item">Wondrous Item</option>
+          </select>
+        </div>
+        <div class="ref-pagination" id="items-pagination" hidden>
+          <button class="btn btn--ghost" id="items-prev-btn" aria-label="Previous page" disabled>← Prev</button>
+          <span class="ref-page-info" id="items-page-info"></span>
+          <button class="btn btn--ghost" id="items-next-btn" aria-label="Next page">Next →</button>
+        </div>
+        <div class="ref-results" id="results-items"
+          aria-live="polite" aria-label="Magic item results"></div>
+      </section>
     </main>
 
     <!-- Modal overlay for spell/monster/item detail -->
@@ -46,6 +181,89 @@
         <div id="modal-body"></div>
       </div>
     </div>
+
+    <template id="monster-card">
+      <article class="ref-card card card-enter">
+        <header class="ref-card__header">
+          <h3 class="ref-card__name"></h3>
+          <span class="badge ref-card__cr"></span>
+        </header>
+        <p class="ref-card__meta ref-card__type"></p>
+        <div class="ref-card__stats">
+          <span class="ref-card__stat">AC <strong class="ref-card__ac"></strong></span>
+          <span class="ref-card__stat">HP <strong class="ref-card__hp"></strong></span>
+          <span class="ref-card__stat">Spd <strong class="ref-card__speed"></strong></span>
+        </div>
+        <div class="ref-card__ability-scores">
+          <div class="ref-card__score" data-ability="str">
+            <abbr class="ref-card__score-label" title="Strength">STR</abbr>
+            <span class="ref-card__score-value"></span>
+            <span class="ref-card__score-mod"></span>
+          </div>
+          <div class="ref-card__score" data-ability="dex">
+            <abbr class="ref-card__score-label" title="Dexterity">DEX</abbr>
+            <span class="ref-card__score-value"></span>
+            <span class="ref-card__score-mod"></span>
+          </div>
+          <div class="ref-card__score" data-ability="con">
+            <abbr class="ref-card__score-label" title="Constitution">CON</abbr>
+            <span class="ref-card__score-value"></span>
+            <span class="ref-card__score-mod"></span>
+          </div>
+          <div class="ref-card__score" data-ability="int">
+            <abbr class="ref-card__score-label" title="Intelligence">INT</abbr>
+            <span class="ref-card__score-value"></span>
+            <span class="ref-card__score-mod"></span>
+          </div>
+          <div class="ref-card__score" data-ability="wis">
+            <abbr class="ref-card__score-label" title="Wisdom">WIS</abbr>
+            <span class="ref-card__score-value"></span>
+            <span class="ref-card__score-mod"></span>
+          </div>
+          <div class="ref-card__score" data-ability="cha">
+            <abbr class="ref-card__score-label" title="Charisma">CHA</abbr>
+            <span class="ref-card__score-value"></span>
+            <span class="ref-card__score-mod"></span>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template id="spell-card">
+      <article class="ref-card card card-enter">
+        <header class="ref-card__header">
+          <h3 class="ref-card__name"></h3>
+          <div class="ref-card__badges">
+            <span class="badge ref-card__level"></span>
+            <span class="badge ref-card__school"></span>
+            <span class="badge ref-card__concentration" hidden>Concentration</span>
+            <span class="badge ref-card__ritual" hidden>Ritual</span>
+          </div>
+        </header>
+        <dl class="ref-card__dl">
+          <dt>Cast Time</dt><dd class="ref-card__casting-time"></dd>
+          <dt>Range</dt><dd class="ref-card__range"></dd>
+          <dt>Duration</dt><dd class="ref-card__duration"></dd>
+          <dt>Components</dt><dd class="ref-card__components"></dd>
+          <dt>Classes</dt><dd class="ref-card__dnd-class"></dd>
+        </dl>
+      </article>
+    </template>
+
+    <template id="magic-item-card">
+      <article class="ref-card card card-enter">
+        <header class="ref-card__header">
+          <h3 class="ref-card__name"></h3>
+          <div class="ref-card__badges">
+            <span class="badge ref-card__rarity"></span>
+            <span class="badge ref-card__attunement" hidden>Attunement</span>
+          </div>
+        </header>
+        <p class="ref-card__meta ref-card__type"></p>
+        <p class="ref-card__desc-excerpt"></p>
+        <p class="ref-card__source"></p>
+      </article>
+    </template>
 
   </body>
 </html>

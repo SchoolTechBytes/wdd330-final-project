@@ -16,8 +16,9 @@
 
 import { initFormValidation, validateForm } from './form.js';
 import { addToParty, loadParty, getParty, removeFromParty, clearParty, isPartyFull } from './party.js';
-import { renderPartyRoster, closeModal, renderCharacterPreview } from './ui.js';
+import { renderPartyRoster, closeModal, renderCharacterPreview, renderSpellCard, buildSpellDetail, renderMonsterCard, buildMonsterDetail, renderMagicItemCard, buildMagicItemDetail, openModal, showLoading, hideLoading, showEmptyState } from './ui.js';
 import { getClasses, getRaces, getClass, getRace } from './dnd-api.js';
+import { getSpells, getMonsters, getMagicItems } from './open5e-api.js';
 import { saveActiveCharacter, loadActiveCharacter, clearActiveCharacter } from './storage.js';
 import { Character } from './character.js';
 
@@ -249,7 +250,301 @@ function initPartyRoster() {
  * Initialize the Reference Browser page (reference.html).
  */
 function initReferenceBrowser() {
-  // TODO: implement
+  // --- Tab switching ---
+  const STORAGE_KEY = 'wqt_active_tab';
+  const tabList = document.querySelector('.ref-tabs');
+  const tabs    = Array.from(tabList.querySelectorAll('.ref-tab[role="tab"]'));
+  const panels  = Array.from(document.querySelectorAll('.ref-panel[role="tabpanel"]'));
+
+  function activateTab(tab) {
+    tabs.forEach(t => {
+      const active = t === tab;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-selected', active);
+      t.tabIndex = active ? 0 : -1;
+    });
+    panels.forEach(panel => {
+      const active = panel.id === tab.getAttribute('aria-controls');
+      panel.classList.toggle('is-active', active);
+      panel.hidden = !active;
+    });
+    sessionStorage.setItem(STORAGE_KEY, tab.dataset.tab);
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => activateTab(tab));
+  });
+
+  tabList.addEventListener('keydown', e => {
+    const idx = tabs.indexOf(document.activeElement);
+    if (idx === -1) return;
+    let next = idx;
+    if (e.key === 'ArrowRight')      next = (idx + 1) % tabs.length;
+    else if (e.key === 'ArrowLeft')  next = (idx - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home')       next = 0;
+    else if (e.key === 'End')        next = tabs.length - 1;
+    else return;
+    e.preventDefault();
+    tabs[next].focus();
+    activateTab(tabs[next]);
+  });
+
+  const saved = sessionStorage.getItem(STORAGE_KEY);
+  const initial = tabs.find(t => t.dataset.tab === saved) ?? tabs[0];
+  activateTab(initial);
+
+  // --- Spell panel ---
+  const spellResults    = document.getElementById('results-spells');
+  const searchSpells    = document.getElementById('search-spells');
+  const filterClass     = document.getElementById('filter-spell-class');
+  const filterLevel     = document.getElementById('filter-spell-level');
+  const filterSchool    = document.getElementById('filter-spell-school');
+  const loadMoreWrapper = document.getElementById('load-more-spells');
+  const loadMoreBtn     = document.getElementById('load-more-spells-btn');
+
+  let spellPage = 1;
+  const spellCache = new Map(); // slug → spell object
+
+  function buildSpellFilters() {
+    const f = {};
+    if (filterClass.value)         f.dnd_class   = filterClass.value;
+    if (filterLevel.value !== '')  f.spell_level = filterLevel.value;
+    if (filterSchool.value)        f.school      = filterSchool.value;
+    if (searchSpells.value.trim()) f.search      = searchSpells.value.trim();
+    return f;
+  }
+
+  async function loadSpells(reset = true) {
+    if (reset) {
+      spellPage = 1;
+      spellResults.innerHTML = '';
+      loadMoreWrapper.hidden = true;
+    }
+
+    showLoading(spellResults);
+    const data = await getSpells({ ...buildSpellFilters(), page: spellPage });
+    hideLoading(spellResults);
+
+    if (!data) {
+      showEmptyState(spellResults, 'Could not load spells. Check your connection.');
+      return;
+    }
+    if (data.results.length === 0 && spellPage === 1) {
+      showEmptyState(spellResults, 'No spells match your filters.');
+      return;
+    }
+
+    data.results.forEach(spell => {
+      spellCache.set(spell.slug, spell);
+      renderSpellCard(spell, spellResults);
+    });
+
+    loadMoreWrapper.hidden = !data.next;
+  }
+
+  // Filter / search wiring
+  let searchDebounce;
+  searchSpells.addEventListener('input', () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => loadSpells(true), 400);
+  });
+
+  [filterClass, filterLevel, filterSchool].forEach(el => {
+    el.addEventListener('change', () => loadSpells(true));
+  });
+
+  loadMoreBtn.addEventListener('click', () => {
+    spellPage++;
+    loadSpells(false);
+  });
+
+  // Card click → modal
+  spellResults.addEventListener('click', e => {
+    const card = e.target.closest('[data-slug]');
+    if (!card) return;
+    const spell = spellCache.get(card.dataset.slug);
+    if (spell) openModal(buildSpellDetail(spell));
+  });
+
+  document.getElementById('tab-spells').addEventListener('click', () => {
+    if (spellCache.size === 0) loadSpells();
+  });
+
+  // --- Monster panel ---
+  const monsterResults = document.getElementById('results-monsters');
+  const searchMonsters = document.getElementById('search-monsters');
+  const filterType     = document.getElementById('filter-monster-type');
+  const crMin          = document.getElementById('filter-cr-min');
+  const crMax          = document.getElementById('filter-cr-max');
+  const pagination     = document.getElementById('monster-pagination');
+  const prevBtn        = document.getElementById('monster-prev-btn');
+  const nextBtn        = document.getElementById('monster-next-btn');
+  const pageInfo       = document.getElementById('monster-page-info');
+
+  let monsterPage = 1;
+  let monsterTotal = 0;
+  const monsterCache = new Map(); // slug → monster object
+  const MONSTERS_PER_PAGE = 20;
+
+  function buildMonsterFilters() {
+    const f = {};
+    if (searchMonsters.value.trim()) f.search  = searchMonsters.value.trim();
+    if (filterType.value)            f.type    = filterType.value;
+    const min = parseFloat(crMin.value);
+    const max = parseFloat(crMax.value);
+    if (!isNaN(min)) f['cr__gte'] = min;
+    if (!isNaN(max)) f['cr__lte'] = max;
+    return f;
+  }
+
+  async function loadMonsters(page = 1) {
+    monsterPage = page;
+    monsterResults.innerHTML = '';
+    pagination.hidden = true;
+
+    showLoading(monsterResults);
+    const data = await getMonsters({ ...buildMonsterFilters(), page: monsterPage });
+    hideLoading(monsterResults);
+
+    if (!data) {
+      showEmptyState(monsterResults, 'Could not load monsters. Check your connection.');
+      return;
+    }
+    if (data.results.length === 0) {
+      showEmptyState(monsterResults, 'No monsters match your filters.');
+      return;
+    }
+
+    monsterTotal = data.count;
+    const totalPages = Math.ceil(monsterTotal / MONSTERS_PER_PAGE);
+
+    data.results.forEach(monster => {
+      monsterCache.set(monster.slug, monster);
+      renderMonsterCard(monster, monsterResults);
+    });
+
+    pageInfo.textContent = `Page ${monsterPage} of ${totalPages} (${monsterTotal} total)`;
+    prevBtn.disabled = monsterPage <= 1;
+    nextBtn.disabled = !data.next;
+    pagination.hidden = false;
+  }
+
+  prevBtn.addEventListener('click', () => loadMonsters(monsterPage - 1));
+  nextBtn.addEventListener('click', () => loadMonsters(monsterPage + 1));
+
+  let monsterDebounce;
+  searchMonsters.addEventListener('input', () => {
+    clearTimeout(monsterDebounce);
+    monsterDebounce = setTimeout(() => loadMonsters(1), 400);
+  });
+
+  [filterType, crMin, crMax].forEach(el => {
+    el.addEventListener('change', () => loadMonsters(1));
+  });
+
+  monsterResults.addEventListener('click', e => {
+    const card = e.target.closest('[data-slug]');
+    if (!card) return;
+    const monster = monsterCache.get(card.dataset.slug);
+    if (monster) openModal(buildMonsterDetail(monster));
+  });
+
+  document.getElementById('tab-monsters').addEventListener('click', () => {
+    if (monsterCache.size === 0) loadMonsters();
+  });
+
+  // --- Magic Items panel ---
+  const itemResults    = document.getElementById('results-items');
+  const searchItems    = document.getElementById('search-items');
+  const filterRarity   = document.getElementById('filter-item-rarity');
+  const filterItemType = document.getElementById('filter-item-type');
+  const itemPagination = document.getElementById('items-pagination');
+  const itemPrevBtn    = document.getElementById('items-prev-btn');
+  const itemNextBtn    = document.getElementById('items-next-btn');
+  const itemPageInfo   = document.getElementById('items-page-info');
+
+  let itemPage = 1;
+  let itemTotal = 0;
+  const itemCache = new Map(); // slug → item object
+  const ITEMS_PER_PAGE = 20;
+
+  function buildItemFilters() {
+    const f = {};
+    if (searchItems.value.trim()) f.search = searchItems.value.trim();
+    if (filterRarity.value)       f.rarity = filterRarity.value;
+    if (filterItemType.value)     f.type   = filterItemType.value;
+    return f;
+  }
+
+  async function loadItems(page = 1) {
+    itemPage = page;
+    itemResults.innerHTML = '';
+    itemPagination.hidden = true;
+
+    showLoading(itemResults);
+    const data = await getMagicItems({ ...buildItemFilters(), page: itemPage });
+    hideLoading(itemResults);
+
+    if (!data) {
+      showEmptyState(itemResults, 'Could not load magic items. Check your connection.');
+      return;
+    }
+    if (data.results.length === 0) {
+      showEmptyState(itemResults, 'No magic items match your filters.');
+      return;
+    }
+
+    itemTotal = data.count;
+    const totalPages = Math.ceil(itemTotal / ITEMS_PER_PAGE);
+
+    data.results.forEach(item => {
+      itemCache.set(item.slug, item);
+      renderMagicItemCard(item, itemResults);
+    });
+
+    itemPageInfo.textContent = `Page ${itemPage} of ${totalPages} (${itemTotal} total)`;
+    itemPrevBtn.disabled = itemPage <= 1;
+    itemNextBtn.disabled = !data.next;
+    itemPagination.hidden = false;
+  }
+
+  itemPrevBtn.addEventListener('click', () => loadItems(itemPage - 1));
+  itemNextBtn.addEventListener('click', () => loadItems(itemPage + 1));
+
+  let itemDebounce;
+  searchItems.addEventListener('input', () => {
+    clearTimeout(itemDebounce);
+    itemDebounce = setTimeout(() => loadItems(1), 400);
+  });
+
+  [filterRarity, filterItemType].forEach(el => {
+    el.addEventListener('change', () => loadItems(1));
+  });
+
+  itemResults.addEventListener('click', e => {
+    const card = e.target.closest('[data-slug]');
+    if (!card) return;
+    const item = itemCache.get(card.dataset.slug);
+    if (item) openModal(buildMagicItemDetail(item));
+  });
+
+  document.getElementById('tab-items').addEventListener('click', () => {
+    if (itemCache.size === 0) loadItems();
+  });
+
+  // Initial data load for whichever tab is active on page load
+  if (initial.dataset.tab === 'spells')   loadSpells();
+  if (initial.dataset.tab === 'monsters') loadMonsters();
+  if (initial.dataset.tab === 'items')    loadItems();
+
+  // --- Shared modal close (click backdrop / close button / Escape) ---
+  document.getElementById('detail-modal').addEventListener('click', e => {
+    if (e.target.classList.contains('modal__close') ||
+        e.target.classList.contains('modal__backdrop')) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);

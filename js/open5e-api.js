@@ -49,7 +49,7 @@ function buildQuery(filters) {
 
 /**
  * Fetch a page of monsters from Open5e, with optional filters.
- * Supported filter keys: challenge_rating, cr__gte, cr__lte, page
+ * Supported filter keys: type, search, challenge_rating, cr__gte, cr__lte, page
  * Response includes: count, next (URL|null), results[]{name, slug, size, type,
  *   alignment, armor_class, hit_points, hit_dice, speed, strength, dexterity,
  *   constitution, intelligence, wisdom, charisma, strength_save, dexterity_save,
@@ -76,7 +76,7 @@ export async function getMonster(slug) {
 
 /**
  * Fetch a page of magic items from Open5e, with optional filters.
- * Supported filter keys: rarity, page
+ * Supported filter keys: rarity, type, search, page
  * Response includes: count, next (URL|null), results[]{name, slug, type,
  *   rarity, requires_attunement, desc, ...}
  * @param {Object} [filters] — e.g. { rarity: 'rare', page: 1 }
@@ -98,7 +98,7 @@ export async function getMagicItem(slug) {
 
 /**
  * Fetch a page of spells from Open5e, with optional filters.
- * Supported filter keys: dnd_class, level_int, page
+ * Supported filter keys: dnd_class, spell_level, school, search, page
  * Response includes: count, next (URL|null), results[]{name, slug, desc,
  *   higher_level, range, components, material, ritual, duration,
  *   concentration, casting_time, level_int, school, dnd_class, spell_lists, ...}

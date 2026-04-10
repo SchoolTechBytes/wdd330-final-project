@@ -4,6 +4,16 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
+   Rarity Color Badges
+   -------------------------------------------------------------------------- */
+.rarity--common     { border-color: #9d9d9d; color: #9d9d9d; }
+.rarity--uncommon   { border-color: #1eff00; color: #1eff00; }
+.rarity--rare       { border-color: #0070dd; color: #0070dd; }
+.rarity--very-rare  { border-color: #a335ee; color: #a335ee; }
+.rarity--legendary  { border-color: #ff8000; color: #ff8000; }
+.rarity--artifact   { border-color: #e6cc80; color: #e6cc80; }
+
+/* --------------------------------------------------------------------------
    Tab Navigation
    -------------------------------------------------------------------------- */
 .ref-tabs {
@@ -27,8 +37,9 @@
 }
 
 .ref-tab.is-active {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+  color: var(--color-text);
+  background-color: var(--color-worn-oak);
+  border-bottom-color: var(--color-worn-oak);
 }
 
 /* --------------------------------------------------------------------------
@@ -45,4 +56,398 @@
   opacity: 1;
   pointer-events: auto;
   position: static;
+}
+
+/* --------------------------------------------------------------------------
+   Filter Bar
+   -------------------------------------------------------------------------- */
+.ref-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.ref-filter-bar .ref-search {
+  flex: 1 1 200px;
+}
+
+.ref-filter-bar .ref-filter {
+  flex: 0 1 160px;
+}
+
+.ref-cr-range {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+
+.ref-cr-range .form-label {
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
+.ref-cr-input {
+  width: 5rem;
+}
+
+.ref-cr-sep {
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Pagination
+   -------------------------------------------------------------------------- */
+.ref-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+}
+
+.ref-page-info {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  min-width: 16rem;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Result Cards
+   -------------------------------------------------------------------------- */
+.ref-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.ref-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ref-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ref-card__name {
+  font-size: var(--font-size-base);
+}
+
+.ref-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.ref-card__meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.ref-card__stats {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.ref-card__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  font-size: var(--font-size-sm);
+}
+
+.ref-card__dl dt {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* --------------------------------------------------------------------------
+   Load More
+   -------------------------------------------------------------------------- */
+.ref-load-more {
+  text-align: center;
+  margin-top: var(--space-6);
+}
+
+/* --------------------------------------------------------------------------
+   Spell Detail Modal Content
+   -------------------------------------------------------------------------- */
+.spell-detail__name {
+  margin-bottom: var(--space-1);
+}
+
+.spell-detail__subtitle {
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-4);
+}
+
+.spell-detail__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.spell-detail__dl {
+  margin-bottom: var(--space-4);
+}
+
+.spell-detail__desc {
+  line-height: var(--line-height-base);
+  white-space: pre-wrap;
+}
+
+.spell-detail__higher-level {
+  margin-top: var(--space-4);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Monster Card — Ability Score Grid
+   -------------------------------------------------------------------------- */
+.ref-card__ability-scores {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-1);
+}
+
+.ref-card__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-shadow-corner);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  gap: 2px;
+}
+
+.ref-card__score-label {
+  font-family: var(--font-heading);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  text-decoration: none;
+}
+
+.ref-card__score-value {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ref-card__score-mod {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Monster Detail Modal Content
+   -------------------------------------------------------------------------- */
+.monster-detail__name {
+  margin-bottom: var(--space-1);
+}
+
+.monster-detail__subtitle {
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-4);
+}
+
+.monster-detail__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.monster-detail__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.monster-detail__stat-label {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.monster-detail__stat-value {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.monster-detail__ability-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.monster-detail__ability {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-shadow-corner);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-1);
+  gap: 2px;
+}
+
+.monster-detail__ability-label {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+
+.monster-detail__ability-score {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.monster-detail__ability-mod {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.monster-detail__row {
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-2);
+  line-height: 1.5;
+}
+
+.monster-detail__row-label {
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+}
+
+.monster-detail__section {
+  margin-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+  padding-top: var(--space-3);
+}
+
+.monster-detail__section-title {
+  font-size: var(--font-size-base);
+  color: var(--color-accent);
+  margin-bottom: var(--space-3);
+}
+
+.monster-detail__action {
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-3);
+  line-height: 1.6;
+}
+
+.monster-detail__action-name {
+  color: var(--color-text);
+}
+
+.monster-detail__legendary-desc {
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Magic Item Card — Description Excerpt and Source
+   -------------------------------------------------------------------------- */
+.ref-card__desc-excerpt {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ref-card__source {
+  font-size: 0.7rem;
+  font-family: var(--font-heading);
+  color: var(--color-text-muted);
+  letter-spacing: 0.03em;
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Magic Item Detail Modal Content
+   -------------------------------------------------------------------------- */
+.item-detail__name {
+  margin-bottom: var(--space-1);
+}
+
+.item-detail__subtitle {
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-3);
+}
+
+.item-detail__attunement {
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  color: var(--color-accent);
+  margin-bottom: var(--space-4);
+}
+
+.item-detail__desc {
+  line-height: var(--line-height-base);
+  white-space: pre-wrap;
+  margin-bottom: var(--space-4);
+}
+
+.item-detail__source {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  border-top: var(--border-width) solid var(--color-border);
+  padding-top: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Loading and Empty States
+   -------------------------------------------------------------------------- */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: var(--space-8);
 }
