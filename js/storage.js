@@ -23,6 +23,56 @@
  *   loadPreference(key)           — load a user preference, or null
  */
 
+/* ==========================================================================
+   SCHEMA — exact shapes of all data written to browser storage
+   ==========================================================================
+
+   1. localStorage  key: "wqt_party"
+   -------------------------------------------------------------------------
+   Array<CharacterRecord>  (max 6 items)
+
+   CharacterRecord {
+     id:                   string    — UUID from crypto.randomUUID()
+     name:                 string
+     classIndex:           string    — dnd5eapi index, e.g. "wizard"
+     className:            string    — display name, e.g. "Wizard"
+     raceIndex:            string    — dnd5eapi index, e.g. "high-elf"
+     raceName:             string    — display name, e.g. "High Elf"
+     level:                number    — 1–20
+     hitDie:               number    — die size: 6 | 8 | 10 | 12
+     background:           string    — "" if not set
+     abilityScores: {
+       str:  number                  — 1–20
+       dex:  number                  — 1–20
+       con:  number                  — 1–20
+       int:  number                  — 1–20
+       wis:  number                  — 1–20
+       cha:  number                  — 1–20
+     }
+     savingThrows:         string[]  — API proficiency indices, e.g. ["saving-throw-str"]
+     proficiencies:        string[]  — API proficiency indices, e.g. ["skill-arcana"]
+     spellcastingAbility:  string|null  — ability index ("int"|"wis"|"cha") or null
+     spells:               string[]  — spell index strings ONLY, e.g. ["fireball"]
+                                       NEVER store full spell objects here
+   }
+
+   2. sessionStorage  key: "wqt_active_character"
+   -------------------------------------------------------------------------
+   CharacterRecord (same shape as above) representing the character currently
+   being built in the form. May be partial while the user is mid-fill.
+   Cleared by clearActiveCharacter() or when the character is added to party.
+
+   3. localStorage  key prefix: "wqt_pref_"
+   -------------------------------------------------------------------------
+   Written one key at a time via savePreference(key, value).
+
+   Full key                   Type    Allowed values
+   ─────────────────────────  ──────  ─────────────────────────────────────
+   wqt_pref_activeTab         string  "builder" | "party" | "reference"
+   wqt_pref_lastClass         string  dnd5eapi class index, e.g. "wizard"
+
+   ========================================================================== */
+
 const KEYS = {
   PARTY: 'wqt_party',
   ACTIVE_CHARACTER: 'wqt_active_character',

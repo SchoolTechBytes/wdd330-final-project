@@ -40,6 +40,9 @@
 
         <form id="character-form" class="character-form card" novalidate>
 
+          <!-- API error banner -->
+          <p id="api-error" class="form-error form-error--banner" role="alert" hidden></p>
+
           <!-- Character Name -->
           <div class="form-group">
             <label class="form-label" for="char-name">Character Name</label>
@@ -190,6 +193,16 @@
         <section class="preview-card__saves">
           <h3 class="preview-card__section-title">Saving Throws</h3>
           <ul class="preview-saves-list"></ul>
+        </section>
+
+        <section class="preview-card__bonuses">
+          <h3 class="preview-card__section-title">Racial Ability Bonuses</h3>
+          <ul class="preview-bonuses-list"></ul>
+        </section>
+
+        <section class="preview-card__traits">
+          <h3 class="preview-card__section-title">Racial Traits</h3>
+          <ul class="preview-traits-list"></ul>
         </section>
       </article>
     </template>

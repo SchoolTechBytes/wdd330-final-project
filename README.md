@@ -53,4 +53,4 @@ Both APIs are publicly available, require no authentication, and have CORS enabl
 
 ## Course
 
-WDD 330 — Web Frontend Development II
+WDD 330 — Web Frontend Development II | BYU | Spring 2026

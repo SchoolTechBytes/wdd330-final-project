@@ -33,8 +33,78 @@
     </header>
 
     <main id="party-roster">
-      <!-- Party Roster content rendered here by ui.js -->
+      <div class="roster-controls">
+        <a href="index.html" class="btn btn--primary">+ Add Character</a>
+        <button class="btn btn--ghost" id="clear-party-btn" type="button">Clear Party</button>
+      </div>
+      <section class="party-grid" aria-label="Party roster"></section>
     </main>
+
+    <template id="party-member-card">
+      <article class="char-card card card-enter">
+        <header class="char-card__header">
+          <h2 class="char-card__name"></h2>
+          <div class="char-card__badges">
+            <span class="badge char-card__class"></span>
+            <span class="badge char-card__race"></span>
+            <span class="badge char-card__level"></span>
+          </div>
+        </header>
+
+        <div class="char-card__hit-die">
+          <span class="char-card__hit-die-label">Hit Die</span>
+          <span class="char-card__hit-die-value"></span>
+        </div>
+
+        <div class="char-card__scores">
+          <div class="char-score" data-ability="str">
+            <span class="char-score__label">STR</span>
+            <span class="char-score__value"></span>
+            <span class="char-score__mod"></span>
+          </div>
+          <div class="char-score" data-ability="dex">
+            <span class="char-score__label">DEX</span>
+            <span class="char-score__value"></span>
+            <span class="char-score__mod"></span>
+          </div>
+          <div class="char-score" data-ability="con">
+            <span class="char-score__label">CON</span>
+            <span class="char-score__value"></span>
+            <span class="char-score__mod"></span>
+          </div>
+          <div class="char-score" data-ability="int">
+            <span class="char-score__label">INT</span>
+            <span class="char-score__value"></span>
+            <span class="char-score__mod"></span>
+          </div>
+          <div class="char-score" data-ability="wis">
+            <span class="char-score__label">WIS</span>
+            <span class="char-score__value"></span>
+            <span class="char-score__mod"></span>
+          </div>
+          <div class="char-score" data-ability="cha">
+            <span class="char-score__label">CHA</span>
+            <span class="char-score__value"></span>
+            <span class="char-score__mod"></span>
+          </div>
+        </div>
+
+        <div class="char-card__section">
+          <h3 class="char-card__section-title">Saving Throws</h3>
+          <ul class="char-card__list char-card__saves-list"></ul>
+        </div>
+
+        <div class="char-card__section">
+          <h3 class="char-card__section-title">Proficiencies</h3>
+          <ul class="char-card__list char-card__profs-list"></ul>
+        </div>
+
+        <span class="badge char-card__spellcaster" hidden>Spellcaster</span>
+
+        <button class="btn btn--danger char-card__remove" type="button"
+          aria-label="Remove character from party">Remove</button>
+      </article>
+    </template>
 
   </body>
 </html>

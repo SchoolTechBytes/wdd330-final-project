@@ -30,7 +30,9 @@ import { Character } from './character.js';
  *   level: number,
  *   hitDie: number|null,
  *   savingThrows: Array<{name: string}>,
- *   abilityScores: {str, dex, con, int, wis, cha}
+ *   abilityScores: {str, dex, con, int, wis, cha},
+ *   abilityBonuses: Array<{ability_score: {name: string}, bonus: number}>,
+ *   racialTraits: Array<{name: string}>
  * }} data
  * @param {HTMLElement} container — #preview-container
  */
@@ -65,17 +67,115 @@ export function renderCharacterPreview(data, container) {
     savesList.appendChild(li);
   }
 
+  const bonusSection = card.querySelector('.preview-card__bonuses');
+  const bonusesList  = card.querySelector('.preview-bonuses-list');
+  if (data.abilityBonuses?.length) {
+    data.abilityBonuses.forEach(({ ability_score, bonus }) => {
+      const li = document.createElement('li');
+      li.textContent = `${ability_score.name} +${bonus}`;
+      bonusesList.appendChild(li);
+    });
+  } else {
+    bonusSection.hidden = true;
+  }
+
+  const traitsSection = card.querySelector('.preview-card__traits');
+  const traitsList    = card.querySelector('.preview-traits-list');
+  if (data.racialTraits?.length) {
+    data.racialTraits.forEach(({ name }) => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      traitsList.appendChild(li);
+    });
+  } else {
+    traitsSection.hidden = true;
+  }
+
   container.innerHTML = '';
   container.appendChild(card);
+}
+
+/** Ability score short-codes for display (covers saving throw indices from the API). */
+const ABILITY_DISPLAY = { str: 'STR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'WIS', cha: 'CHA' };
+
+/**
+ * Format a proficiency index string for display.
+ * Handles ability-score indices ("int" → "INT"), legacy "saving-throw-*" format,
+ * and skill/weapon/armor indices ("skill-arcana" → "Arcana").
+ * @param {string} index
+ * @returns {string}
+ */
+function formatProficiency(index) {
+  if (ABILITY_DISPLAY[index]) return ABILITY_DISPLAY[index];
+  if (index.startsWith('saving-throw-')) {
+    const ability = index.slice('saving-throw-'.length);
+    return ABILITY_DISPLAY[ability] ?? ability.toUpperCase();
+  }
+  return index
+    .replace(/^skill-/, '')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
 }
 
 /**
  * Render a character card into the given container element.
  * @param {import('./character.js').Character} character
  * @param {HTMLElement} container
+ * @param {number} [animationDelay=0] — stagger delay in ms
  */
-export function renderCharacterCard(character, container) {
-  // TODO: implement
+export function renderCharacterCard(character, container, animationDelay = 0) {
+  const tmpl = document.getElementById('party-member-card');
+  const card = tmpl.content.cloneNode(true);
+  const article = card.querySelector('.char-card');
+
+  article.dataset.id = character.id;
+  if (animationDelay) article.style.animationDelay = `${animationDelay}ms`;
+
+  card.querySelector('.char-card__name').textContent = character.name;
+  card.querySelector('.char-card__class').textContent = character.className || '—';
+  card.querySelector('.char-card__race').textContent = character.raceName || '—';
+  card.querySelector('.char-card__level').textContent = `Lvl ${character.level}`;
+  card.querySelector('.char-card__hit-die-value').textContent =
+    character.hitDie ? `d${character.hitDie}` : '—';
+
+  ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(ability => {
+    const score = character[ability] ?? 10;
+    const mod = Character.getModifier(score);
+    const cell = card.querySelector(`.char-score[data-ability="${ability}"]`);
+    cell.querySelector('.char-score__value').textContent = score;
+    cell.querySelector('.char-score__mod').textContent = mod >= 0 ? `+${mod}` : `${mod}`;
+  });
+
+  const savesList = card.querySelector('.char-card__saves-list');
+  if (character.savingThrows?.length) {
+    character.savingThrows.forEach(st => {
+      const li = document.createElement('li');
+      li.textContent = formatProficiency(st);
+      savesList.appendChild(li);
+    });
+  } else {
+    const li = document.createElement('li');
+    li.textContent = '—';
+    savesList.appendChild(li);
+  }
+
+  const profsList = card.querySelector('.char-card__profs-list');
+  if (character.proficiencies?.length) {
+    character.proficiencies.forEach(p => {
+      const li = document.createElement('li');
+      li.textContent = formatProficiency(p);
+      profsList.appendChild(li);
+    });
+  } else {
+    const li = document.createElement('li');
+    li.textContent = '—';
+    profsList.appendChild(li);
+  }
+
+  const spellBadge = card.querySelector('.char-card__spellcaster');
+  if (character.isSpellcaster()) spellBadge.hidden = false;
+
+  container.appendChild(card);
 }
 
 /**
@@ -85,7 +185,26 @@ export function renderCharacterCard(character, container) {
  * @param {HTMLElement} container
  */
 export function renderPartyRoster(party, container) {
-  // TODO: implement
+  container.innerHTML = '';
+
+  if (party.length === 0) {
+    const msg = document.createElement('p');
+    msg.className = 'party-empty';
+    msg.textContent = 'No adventurers yet. Build a character to begin your party.';
+    container.appendChild(msg);
+    return;
+  }
+
+  party.forEach((character, i) => {
+    renderCharacterCard(character, container, i * 80);
+  });
+
+  if (party.length >= 6) {
+    const full = document.createElement('p');
+    full.className = 'party-full';
+    full.textContent = 'Your party is full — six adventurers assembled!';
+    container.appendChild(full);
+  }
 }
 
 /**

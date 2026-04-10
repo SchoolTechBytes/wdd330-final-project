@@ -2,3 +2,195 @@
    party.css — Styles for View 2: Party Roster (party.html)
    Includes: party grid, character cards, add-character CTA, export controls
    ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Roster Controls Bar
+   -------------------------------------------------------------------------- */
+.roster-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-8) 0;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Party Grid
+   -------------------------------------------------------------------------- */
+.party-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-8);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  perspective: 800px;
+}
+
+/* --------------------------------------------------------------------------
+   Empty / Full State Messages
+   -------------------------------------------------------------------------- */
+.party-empty,
+.party-full {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+  font-style: italic;
+}
+
+.party-empty {
+  color: var(--color-text-muted);
+  border: var(--border-width) dashed var(--color-worn-oak);
+  border-radius: var(--radius-lg);
+}
+
+.party-full {
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+  letter-spacing: 0.05em;
+}
+
+/* --------------------------------------------------------------------------
+   Character Card
+   -------------------------------------------------------------------------- */
+.char-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.char-card__header {
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.char-card__name {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-1);
+  word-break: break-word;
+}
+
+.char-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* Hit die row */
+.char-card__hit-die {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-card__hit-die-label {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.char-card__hit-die-value {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* Ability scores grid (3 × 2) */
+.char-card__scores {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-1);
+}
+
+.char-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-shadow-corner);
+  border: var(--border-width) solid var(--color-worn-oak);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  text-align: center;
+}
+
+.char-score__label {
+  font-family: var(--font-heading);
+  font-size: 0.55rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.char-score__value {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.char-score__mod {
+  font-size: 0.7rem;
+  color: var(--color-accent);
+}
+
+/* Spellcaster badge */
+.char-card__spellcaster {
+  align-self: flex-start;
+  background-color: var(--color-hearthlight);
+  color: var(--color-shadow-corner);
+}
+
+/* Saving throws / proficiencies sections */
+.char-card__section {
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.char-card__section-title {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.char-card__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+
+.char-card__list li {
+  font-size: 0.7rem;
+  color: var(--color-text);
+}
+
+/* Push remove button to bottom */
+.char-card__remove {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1000px) {
+  .party-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .roster-controls {
+    padding: var(--space-4) var(--space-4) 0;
+  }
+
+  .party-grid {
+    grid-template-columns: 1fr;
+    padding: var(--space-4);
+  }
+}

@@ -16,7 +16,7 @@
  */
 
 import { Character } from './character.js';
-import { saveLocal, loadLocal } from './storage.js';
+import { saveLocal, loadLocal, removeLocal } from './storage.js';
 
 const PARTY_KEY = 'wqt_party';
 const MAX_PARTY_SIZE = 6;
@@ -27,11 +27,17 @@ let party = [];
 /**
  * Add a character to the party.
  * @param {Character} character
- * @returns {boolean} true if added, false if party is full or duplicate id
+ * @returns {Character[]} updated party array (shallow copy)
+ * @throws {Error} if party is full or a character with the same name exists
  */
 export function addToParty(character) {
-  // TODO: implement
-  return false;
+  if (party.length >= MAX_PARTY_SIZE)
+    throw new Error('Party is full (max 6 characters)');
+  if (party.some(c => c.name.toLowerCase() === character.name.toLowerCase()))
+    throw new Error(`A character named "${character.name}" is already in the party`);
+  party.push(character);
+  _persist();
+  return [...party];
 }
 
 /**
@@ -39,14 +45,31 @@ export function addToParty(character) {
  * @param {string} id
  */
 export function removeFromParty(id) {
-  // TODO: implement
+  party = party.filter(c => c.id !== id);
+  _persist();
+}
+
+/**
+ * Return true if the party has reached the maximum size.
+ * @returns {boolean}
+ */
+export function isPartyFull() {
+  return party.length >= MAX_PARTY_SIZE;
+}
+
+/**
+ * Remove all characters from the party and clear localStorage.
+ */
+export function clearParty() {
+  party = [];
+  removeLocal(PARTY_KEY);
 }
 
 /**
  * Persist the current party to localStorage.
  */
 export function saveParty() {
-  // TODO: implement
+  _persist();
 }
 
 /**
@@ -54,7 +77,8 @@ export function saveParty() {
  * Replaces the current in-memory party state.
  */
 export function loadParty() {
-  // TODO: implement
+  const records = loadLocal(PARTY_KEY) ?? [];
+  party = records.map(r => Character.fromJSON(r));
 }
 
 /**
@@ -63,4 +87,9 @@ export function loadParty() {
  */
 export function getParty() {
   return party;
+}
+
+/** @private Serialize and write the current party to localStorage. */
+function _persist() {
+  saveLocal(PARTY_KEY, party.map(c => c.toJSON()));
 }

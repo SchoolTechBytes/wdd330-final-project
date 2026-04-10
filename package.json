@@ -1,0 +1,12 @@
+{
+  "name": "the-wandering-quill-tavern",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint js/**/*.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}
