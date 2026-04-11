@@ -97,7 +97,7 @@
 }
 
 .preview-empty {
-  color: var(--color-text-muted);
+  color: var(--color-accent);
   font-style: italic;
   text-align: center;
   padding: var(--space-8) var(--space-4);
@@ -143,21 +143,21 @@
 .preview-card__hit-die-label {
   font-family: var(--font-heading);
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   letter-spacing: 0.05em;
 }
 
 .preview-card__hit-die-value {
   font-family: var(--font-heading);
   font-size: var(--font-size-lg);
-  color: var(--color-accent);
+  color: var(--color-parchment);
   font-weight: 700;
 }
 
 /* Section titles inside preview */
 .preview-card__section-title {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   margin-bottom: var(--space-3);
   letter-spacing: 0.05em;
 }
@@ -215,7 +215,7 @@
 
 .preview-saves-list li {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
 }
 
 /* --------------------------------------------------------------------------

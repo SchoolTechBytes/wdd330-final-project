@@ -8,8 +8,8 @@
    -------------------------------------------------------------------------- */
 .rarity--common     { border-color: #9d9d9d; color: #9d9d9d; }
 .rarity--uncommon   { border-color: #1eff00; color: #1eff00; }
-.rarity--rare       { border-color: #0070dd; color: #0070dd; }
-.rarity--very-rare  { border-color: #a335ee; color: #a335ee; }
+.rarity--rare       { border-color: #4499FF; color: #4499FF; }
+.rarity--very-rare  { border-color: #C070FF; color: #C070FF; }
 .rarity--legendary  { border-color: #ff8000; color: #ff8000; }
 .rarity--artifact   { border-color: #e6cc80; color: #e6cc80; }
 
@@ -27,7 +27,7 @@
   padding: var(--space-2) var(--space-4);
   font-family: var(--font-heading);
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-accent);
   border-bottom: 2px solid transparent;
   transition: color var(--transition-fast), border-color var(--transition-fast);
 }
@@ -93,7 +93,7 @@
 }
 
 .ref-cr-sep {
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
 }
 
 /* --------------------------------------------------------------------------
@@ -111,7 +111,7 @@
 .ref-page-info {
   font-family: var(--font-heading);
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   min-width: 16rem;
   text-align: center;
 }
@@ -130,6 +130,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  cursor: pointer;
+}
+
+.ref-card:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .ref-card__header {
@@ -140,6 +146,7 @@
 
 .ref-card__name {
   font-size: var(--font-size-base);
+  color: var(--color-parchment);
 }
 
 .ref-card__badges {
@@ -150,7 +157,7 @@
 
 .ref-card__meta {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   font-style: italic;
 }
 
@@ -158,7 +165,7 @@
   display: flex;
   gap: var(--space-4);
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
 }
 
 .ref-card__dl {
@@ -173,7 +180,7 @@
   font-family: var(--font-heading);
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   letter-spacing: 0.05em;
 }
 
@@ -193,7 +200,7 @@
 }
 
 .spell-detail__subtitle {
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   font-style: italic;
   margin-bottom: var(--space-4);
 }
@@ -217,7 +224,7 @@
 .spell-detail__higher-level {
   margin-top: var(--space-4);
   font-style: italic;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
 }
 
 /* --------------------------------------------------------------------------
@@ -268,7 +275,7 @@
 }
 
 .monster-detail__subtitle {
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   font-style: italic;
   margin-bottom: var(--space-4);
 }
@@ -290,7 +297,7 @@
   font-family: var(--font-heading);
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -345,7 +352,7 @@
 }
 
 .monster-detail__row-label {
-  color: var(--color-accent);
+  color: var(--color-parchment);
   font-family: var(--font-heading);
   font-size: 0.75rem;
 }
@@ -358,7 +365,7 @@
 
 .monster-detail__section-title {
   font-size: var(--font-size-base);
-  color: var(--color-accent);
+  color: var(--color-parchment);
   margin-bottom: var(--space-3);
 }
 
@@ -375,7 +382,7 @@
 .monster-detail__legendary-desc {
   font-size: var(--font-size-sm);
   font-style: italic;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   margin-top: var(--space-4);
   margin-bottom: var(--space-2);
 }
@@ -385,7 +392,7 @@
    -------------------------------------------------------------------------- */
 .ref-card__desc-excerpt {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -396,9 +403,8 @@
 .ref-card__source {
   font-size: 0.7rem;
   font-family: var(--font-heading);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   letter-spacing: 0.03em;
-  opacity: 0.7;
 }
 
 /* --------------------------------------------------------------------------
@@ -409,7 +415,7 @@
 }
 
 .item-detail__subtitle {
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   font-style: italic;
   margin-bottom: var(--space-3);
 }
@@ -417,7 +423,7 @@
 .item-detail__attunement {
   font-size: var(--font-size-sm);
   font-style: italic;
-  color: var(--color-accent);
+  color: var(--color-parchment);
   margin-bottom: var(--space-4);
 }
 
@@ -429,7 +435,7 @@
 
 .item-detail__source {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   font-style: italic;
   border-top: var(--border-width) solid var(--color-border);
   padding-top: var(--space-3);
@@ -447,7 +453,7 @@
 
 .empty-state {
   text-align: center;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   font-style: italic;
   padding: var(--space-8);
 }

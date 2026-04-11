@@ -16,7 +16,7 @@
 
 import { initFormValidation, validateForm } from './form.js';
 import { addToParty, loadParty, getParty, removeFromParty, clearParty, isPartyFull } from './party.js';
-import { renderPartyRoster, closeModal, renderCharacterPreview, renderSpellCard, buildSpellDetail, renderMonsterCard, buildMonsterDetail, renderMagicItemCard, buildMagicItemDetail, openModal, showLoading, hideLoading, showEmptyState } from './ui.js';
+import { renderPartyRoster, renderPartySummary, closeModal, renderCharacterPreview, renderSpellCard, buildSpellDetail, renderMonsterCard, buildMonsterDetail, renderMagicItemCard, buildMagicItemDetail, openModal, showLoading, hideLoading, showEmptyState } from './ui.js';
 import { getClasses, getRaces, getClass, getRace } from './dnd-api.js';
 import { getSpells, getMonsters, getMagicItems } from './open5e-api.js';
 import { saveActiveCharacter, loadActiveCharacter, clearActiveCharacter } from './storage.js';
@@ -214,16 +214,23 @@ async function initCharacterBuilder() {
  * Initialize the Party Roster page (party.html).
  */
 function initPartyRoster() {
-  const container  = document.querySelector('.party-grid');
-  const addLink    = document.querySelector('.roster-controls a');
-  const clearBtn   = document.getElementById('clear-party-btn');
+  const container      = document.querySelector('.party-grid');
+  const addLink        = document.querySelector('.roster-controls a');
+  const clearBtn       = document.getElementById('clear-party-btn');
+  const summaryBtn     = document.getElementById('summary-view-btn');
+  const exportBtn      = document.getElementById('export-btn');
+  const loadBtn        = document.getElementById('load-btn');
+  const fileInput      = document.getElementById('party-file-input');
+  const summarySection = document.getElementById('party-summary');
+  let isSummaryView    = false;
 
   function refresh() {
     renderPartyRoster(getParty(), container);
+    if (isSummaryView) renderPartySummary(getParty(), summarySection);
     const full = isPartyFull();
     addLink.setAttribute('aria-disabled', full);
+    addLink.tabIndex            = full ? -1 : 0;
     addLink.style.pointerEvents = full ? 'none' : '';
-    addLink.style.opacity       = full ? '0.5' : '';
     clearBtn.disabled = getParty().length === 0;
   }
 
@@ -243,6 +250,48 @@ function initPartyRoster() {
     if (!window.confirm('Dismiss the entire party? This cannot be undone.')) return;
     clearParty();
     refresh();
+  });
+
+  summaryBtn.addEventListener('click', () => {
+    isSummaryView = !isSummaryView;
+    container.hidden      = isSummaryView;
+    summarySection.hidden = !isSummaryView;
+    summaryBtn.textContent = isSummaryView ? 'Card View' : 'Summary View';
+    if (isSummaryView) renderPartySummary(getParty(), summarySection);
+  });
+
+  exportBtn.addEventListener('click', () => {
+    const data = JSON.stringify(getParty().map(c => c.toJSON()), null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'wandering-quill-party.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  loadBtn.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    fileInput.value = '';
+    const reader = new FileReader();
+    reader.onload = e => {
+      if (!window.confirm('Loading a party will overwrite your current party. Continue?')) return;
+      let records;
+      try { records = JSON.parse(e.target.result); }
+      catch { window.alert('Invalid JSON file.'); return; }
+      if (!Array.isArray(records)) { window.alert('Invalid party file format.'); return; }
+      clearParty();
+      for (const r of records) {
+        try { addToParty(Character.fromJSON(r)); }
+        catch { /* skip on duplicate name or full party */ }
+      }
+      refresh();
+    };
+    reader.readAsText(file);
   });
 }
 
@@ -358,12 +407,19 @@ function initReferenceBrowser() {
     loadSpells(false);
   });
 
-  // Card click → modal
+  // Card click / Enter / Space → modal
+  function openSpellModal(card) {
+    const spell = spellCache.get(card.dataset.slug);
+    if (spell) openModal(buildSpellDetail(spell), card);
+  }
   spellResults.addEventListener('click', e => {
     const card = e.target.closest('[data-slug]');
-    if (!card) return;
-    const spell = spellCache.get(card.dataset.slug);
-    if (spell) openModal(buildSpellDetail(spell));
+    if (card) openSpellModal(card);
+  });
+  spellResults.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('[data-slug]');
+    if (card) { e.preventDefault(); openSpellModal(card); }
   });
 
   document.getElementById('tab-spells').addEventListener('click', () => {
@@ -442,11 +498,18 @@ function initReferenceBrowser() {
     el.addEventListener('change', () => loadMonsters(1));
   });
 
+  function openMonsterModal(card) {
+    const monster = monsterCache.get(card.dataset.slug);
+    if (monster) openModal(buildMonsterDetail(monster), card);
+  }
   monsterResults.addEventListener('click', e => {
     const card = e.target.closest('[data-slug]');
-    if (!card) return;
-    const monster = monsterCache.get(card.dataset.slug);
-    if (monster) openModal(buildMonsterDetail(monster));
+    if (card) openMonsterModal(card);
+  });
+  monsterResults.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('[data-slug]');
+    if (card) { e.preventDefault(); openMonsterModal(card); }
   });
 
   document.getElementById('tab-monsters').addEventListener('click', () => {
@@ -521,11 +584,18 @@ function initReferenceBrowser() {
     el.addEventListener('change', () => loadItems(1));
   });
 
+  function openItemModal(card) {
+    const item = itemCache.get(card.dataset.slug);
+    if (item) openModal(buildMagicItemDetail(item), card);
+  }
   itemResults.addEventListener('click', e => {
     const card = e.target.closest('[data-slug]');
-    if (!card) return;
-    const item = itemCache.get(card.dataset.slug);
-    if (item) openModal(buildMagicItemDetail(item));
+    if (card) openItemModal(card);
+  });
+  itemResults.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('[data-slug]');
+    if (card) { e.preventDefault(); openItemModal(card); }
   });
 
   document.getElementById('tab-items').addEventListener('click', () => {

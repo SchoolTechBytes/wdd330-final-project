@@ -246,6 +246,9 @@ export function renderMonsterCard(monster, container) {
   const article = card.querySelector('article');
 
   article.dataset.slug = monster.slug;
+  article.tabIndex = 0;
+  article.setAttribute('role', 'button');
+  article.setAttribute('aria-label', `View details for ${monster.name}`);
 
   card.querySelector('.ref-card__name').textContent = monster.name;
   card.querySelector('.ref-card__cr').textContent = `CR ${monster.challenge_rating ?? '—'}`;
@@ -310,20 +313,27 @@ export function buildMonsterDetail(monster) {
   el.appendChild(stats);
 
   // Ability scores grid
+  const ABILITY_FULL_NAMES = {
+    str: 'Strength', dex: 'Dexterity', con: 'Constitution',
+    int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma',
+  };
   const abilityGrid = document.createElement('div');
   abilityGrid.className = 'monster-detail__ability-grid';
   ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(ability => {
     const score = monster[ability] ?? 10;
     const cell = document.createElement('div');
     cell.className = 'monster-detail__ability';
-    cell.innerHTML = `
-      <abbr class="monster-detail__ability-label" title="${ability}"></abbr>
-      <span class="monster-detail__ability-score"></span>
-      <span class="monster-detail__ability-mod"></span>
-    `;
-    cell.querySelector('.monster-detail__ability-label').textContent = ability.toUpperCase();
-    cell.querySelector('.monster-detail__ability-score').textContent = score;
-    cell.querySelector('.monster-detail__ability-mod').textContent = abilityMod(score);
+    const abbr = document.createElement('abbr');
+    abbr.className = 'monster-detail__ability-label';
+    abbr.title = ABILITY_FULL_NAMES[ability];
+    abbr.textContent = ability.toUpperCase();
+    const scoreEl = document.createElement('span');
+    scoreEl.className = 'monster-detail__ability-score';
+    scoreEl.textContent = score;
+    const modEl = document.createElement('span');
+    modEl.className = 'monster-detail__ability-mod';
+    modEl.textContent = abilityMod(score);
+    cell.append(abbr, scoreEl, modEl);
     abilityGrid.appendChild(cell);
   });
   el.appendChild(abilityGrid);
@@ -418,6 +428,9 @@ export function renderSpellCard(spell, container) {
   const article = card.querySelector('article');
 
   article.dataset.slug = spell.slug;
+  article.tabIndex = 0;
+  article.setAttribute('role', 'button');
+  article.setAttribute('aria-label', `View details for ${spell.name}`);
 
   card.querySelector('.ref-card__name').textContent = spell.name;
   card.querySelector('.ref-card__level').textContent =
@@ -516,6 +529,9 @@ export function renderMagicItemCard(item, container) {
   const article = card.querySelector('article');
 
   article.dataset.slug = item.slug;
+  article.tabIndex = 0;
+  article.setAttribute('role', 'button');
+  article.setAttribute('aria-label', `View details for ${item.name}`);
 
   card.querySelector('.ref-card__name').textContent = item.name;
 
@@ -597,23 +613,62 @@ export function buildMagicItemDetail(item) {
   return el;
 }
 
+/** Element that had focus before the modal opened — restored on close. */
+let modalTrigger = null;
+
 /**
- * Populate the detail modal with a DOM element and show it.
- * @param {HTMLElement} contentElement
+ * Tab-key focus trap: cycles focus within the modal's focusable elements.
+ * Attached/detached on open/close.
+ * @param {KeyboardEvent} e
  */
-export function openModal(contentElement) {
+function trapFocus(e) {
+  if (e.key !== 'Tab') return;
   const modal = document.getElementById('detail-modal');
-  const body = document.getElementById('modal-body');
-  body.replaceChildren(contentElement);
-  modal.hidden = false;
+  const focusable = Array.from(modal.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  ));
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last  = focusable[focusable.length - 1];
+  if (e.shiftKey) {
+    if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+  } else {
+    if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+  }
 }
 
 /**
- * Hide the detail modal.
+ * Populate the detail modal with a DOM element and show it.
+ * Moves focus to the close button and traps Tab within the modal.
+ * @param {HTMLElement} contentElement
+ * @param {HTMLElement|null} [trigger] — element to restore focus to on close
+ */
+export function openModal(contentElement, trigger = null) {
+  const modal    = document.getElementById('detail-modal');
+  const body     = document.getElementById('modal-body');
+  const closeBtn = modal.querySelector('.modal__close');
+
+  modalTrigger = trigger ?? document.activeElement;
+
+  body.replaceChildren(contentElement);
+  modal.hidden = false;
+
+  modal.addEventListener('keydown', trapFocus);
+  closeBtn?.focus();
+}
+
+/**
+ * Hide the detail modal, remove focus trap, restore focus to trigger.
  */
 export function closeModal() {
   const modal = document.getElementById('detail-modal');
-  if (modal) modal.hidden = true;
+  if (!modal || modal.hidden) return;
+  modal.hidden = true;
+  modal.removeEventListener('keydown', trapFocus);
+  if (modalTrigger) {
+    modalTrigger.focus();
+    modalTrigger = null;
+  }
 }
 
 /**
@@ -649,4 +704,44 @@ export function showEmptyState(targetElement, message) {
   p.className = 'empty-state';
   p.textContent = message;
   targetElement.appendChild(p);
+}
+
+/**
+ * Render the party summary table.
+ * Populates .summary-table__body inside the given container.
+ * @param {Character[]} party
+ * @param {HTMLElement} container  — the <section class="party-summary"> element
+ */
+export function renderPartySummary(party, container) {
+  const tbody = container.querySelector('.summary-table__body');
+  tbody.innerHTML = '';
+
+  if (!party.length) {
+    const row  = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan   = 12;
+    cell.textContent = 'No characters in party.';
+    cell.style.textAlign = 'center';
+    row.appendChild(cell);
+    tbody.appendChild(row);
+    return;
+  }
+
+  for (const char of party) {
+    const conMod = Character.getModifier(char.con);
+    const dexMod = Character.getModifier(char.dex);
+    const hpAvg  = Math.floor(char.hitDie / 2) + 1;
+    const hp     = hpAvg * char.level + conMod * char.level;
+    const ac     = 10 + dexMod;
+
+    const row = document.createElement('tr');
+    [char.name, char.className, char.raceName, char.level,
+     char.str, char.dex, char.con, char.int, char.wis, char.cha,
+     hp, ac].forEach(val => {
+      const td = document.createElement('td');
+      td.textContent = val;
+      row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  }
 }

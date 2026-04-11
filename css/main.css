@@ -67,6 +67,29 @@
 }
 
 /* --------------------------------------------------------------------------
+   Skip Link
+   -------------------------------------------------------------------------- */
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-shadow-corner);
+  padding: var(--space-2) var(--space-6);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  text-decoration: none;
+  z-index: 300;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* --------------------------------------------------------------------------
    Reset
    -------------------------------------------------------------------------- */
 *, *::before, *::after {
@@ -114,6 +137,15 @@ button {
 input, select, textarea {
   font-family: inherit;
   font-size: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   Focus Styles (keyboard navigation)
+   -------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
 
 /* --------------------------------------------------------------------------
@@ -238,8 +270,8 @@ main {
 
 .btn--ghost {
   background-color: transparent;
-  color: var(--color-text-muted);
-  border-color: var(--color-candlelight);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .btn--ghost:hover {
@@ -249,8 +281,8 @@ main {
 
 .btn--danger {
   background-color: transparent;
-  color: #c0392b;
-  border-color: #c0392b;
+  color: #FFB9B9;
+  border-color: #FF6B6B;
 }
 
 .btn--danger:hover {
@@ -272,7 +304,7 @@ main {
   font-family: var(--font-heading);
   font-size: var(--font-size-sm);
   font-weight: 700;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   letter-spacing: 0.05em;
 }
 
@@ -289,7 +321,13 @@ main {
 
 .form-input:focus,
 .form-select:focus {
-  outline: none;
+  border-color: var(--color-candlelight);
+}
+
+.form-input:focus-visible,
+.form-select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
   border-color: var(--color-candlelight);
 }
 
@@ -300,7 +338,7 @@ main {
 
 .form-error {
   font-size: var(--font-size-sm);
-  color: #e74c3c;
+  color: #FFB9B9;
   min-height: 1.2em;
 }
 
@@ -360,7 +398,7 @@ main {
   top: var(--space-4);
   right: var(--space-4);
   font-size: var(--font-size-xl);
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   line-height: 1;
   transition: color var(--transition-fast);
 }

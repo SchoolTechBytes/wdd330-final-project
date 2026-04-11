@@ -20,6 +20,7 @@
     <script type="module" src="js/main.js"></script>
   </head>
   <body>
+    <a class="skip-link" href="#character-builder">Skip to main content</a>
     <header class="site-header">
       <nav class="site-nav" aria-label="Main navigation">
         <a class="nav-logo" href="index.html">The Wandering Quill Tavern</a>
@@ -32,7 +33,7 @@
       </nav>
     </header>
 
-    <main id="character-builder">
+    <main id="character-builder" tabindex="-1">
       <div class="builder-layout">
 
       <section class="builder-form-col">
@@ -129,7 +130,7 @@
       </section>
 
       <aside class="builder-preview-col">
-        <h1 class="builder-title">Live View</h1>
+        <h2 class="builder-title">Live View</h2>
         <div id="preview-container" class="preview-container">
           <p class="preview-empty">Fill in the form to see your character take shape.</p>
         </div>

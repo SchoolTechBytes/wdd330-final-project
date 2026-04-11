@@ -6,6 +6,15 @@
 /* --------------------------------------------------------------------------
    Roster Controls Bar
    -------------------------------------------------------------------------- */
+
+/* Party-full disabled state: color-only, no opacity (opacity degrades contrast). */
+a.btn--primary[aria-disabled="true"] {
+  background-color: var(--color-shadow-corner);
+  color: var(--color-text-muted);
+  border-color: var(--color-candlelight);
+  cursor: not-allowed;
+}
+
 .roster-controls {
   display: flex;
   align-items: center;
@@ -40,7 +49,7 @@
 }
 
 .party-empty {
-  color: var(--color-text-muted);
+  color: var(--color-accent);
   border: var(--border-width) dashed var(--color-worn-oak);
   border-radius: var(--radius-lg);
 }
@@ -68,6 +77,7 @@
 
 .char-card__name {
   font-size: var(--font-size-lg);
+  color: var(--color-parchment);
   margin-bottom: var(--space-1);
   word-break: break-word;
 }
@@ -88,14 +98,14 @@
 .char-card__hit-die-label {
   font-family: var(--font-heading);
   font-size: 0.7rem;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   letter-spacing: 0.05em;
 }
 
 .char-card__hit-die-value {
   font-family: var(--font-heading);
   font-size: var(--font-size-base);
-  color: var(--color-accent);
+  color: var(--color-parchment);
   font-weight: 700;
 }
 
@@ -140,8 +150,8 @@
 /* Spellcaster badge */
 .char-card__spellcaster {
   align-self: flex-start;
-  background-color: var(--color-hearthlight);
-  color: var(--color-shadow-corner);
+  background-color: var(--color-worn-oak);
+  color: var(--color-parchment);
 }
 
 /* Saving throws / proficiencies sections */
@@ -153,7 +163,7 @@
 .char-card__section-title {
   font-family: var(--font-heading);
   font-size: 0.65rem;
-  color: var(--color-text-muted);
+  color: var(--color-parchment);
   letter-spacing: 0.05em;
   margin-bottom: var(--space-1);
 }
@@ -187,10 +197,71 @@
 @media (max-width: 640px) {
   .roster-controls {
     padding: var(--space-4) var(--space-4) 0;
+    flex-wrap: wrap;
   }
 
   .party-grid {
     grid-template-columns: 1fr;
     padding: var(--space-4);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Party Summary Table
+   -------------------------------------------------------------------------- */
+.party-summary {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-8);
+  overflow-x: auto;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+}
+
+.summary-table th {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+  border-bottom: 2px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.summary-table td {
+  color: var(--color-text);
+  border-bottom: var(--border-width) solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+}
+
+.summary-table tr:hover td {
+  background-color: var(--color-shadow-corner);
+}
+
+/* --------------------------------------------------------------------------
+   Print Styles
+   -------------------------------------------------------------------------- */
+@media print {
+  .site-header,
+  .roster-controls,
+  .party-grid {
+    display: none !important;
+  }
+
+  .party-summary {
+    display: block !important;
+  }
+
+  .summary-table th,
+  .summary-table td {
+    border: 1px solid #333;
+    padding: 4px 8px;
+    color: #000;
   }
 }
