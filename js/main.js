@@ -19,7 +19,7 @@ import { addToParty, loadParty, getParty, removeFromParty, clearParty, isPartyFu
 import { renderPartyRoster, renderPartySummary, closeModal, renderCharacterPreview, renderSpellCard, buildSpellDetail, renderMonsterCard, buildMonsterDetail, renderMagicItemCard, buildMagicItemDetail, openModal, showLoading, hideLoading, showEmptyState } from './ui.js';
 import { getClasses, getRaces, getClass, getRace } from './dnd-api.js';
 import { getSpells, getMonsters, getMagicItems } from './open5e-api.js';
-import { saveActiveCharacter, loadActiveCharacter, clearActiveCharacter } from './storage.js';
+import { saveActiveCharacter, loadActiveCharacter, clearActiveCharacter, savePreference, loadPreference } from './storage.js';
 import { Character } from './character.js';
 
 /**
@@ -69,6 +69,10 @@ async function initCharacterBuilder() {
       classSelect.appendChild(opt);
     });
     classSelect.disabled = false;
+    const prefClass = loadPreference('lastClass');
+    if (prefClass && classSelect.querySelector(`option[value="${prefClass}"]`)) {
+      classSelect.value = prefClass;
+    }
   } else {
     classSelect.innerHTML = '<option value="">Failed to load classes</option>';
     anyFailed = true;
@@ -155,6 +159,7 @@ async function initCharacterBuilder() {
     classSelect.disabled = true;
     cachedClassData = e.target.value ? await getClass(e.target.value) : null;
     classSelect.disabled = false;
+    savePreference('lastClass', e.target.value);
     renderCharacterPreview(collectFormData(), previewContainer);
     persistFormState();
   });
@@ -300,7 +305,6 @@ function initPartyRoster() {
  */
 function initReferenceBrowser() {
   // --- Tab switching ---
-  const STORAGE_KEY = 'wqt_active_tab';
   const tabList = document.querySelector('.ref-tabs');
   const tabs    = Array.from(tabList.querySelectorAll('.ref-tab[role="tab"]'));
   const panels  = Array.from(document.querySelectorAll('.ref-panel[role="tabpanel"]'));
@@ -317,7 +321,7 @@ function initReferenceBrowser() {
       panel.classList.toggle('is-active', active);
       panel.hidden = !active;
     });
-    sessionStorage.setItem(STORAGE_KEY, tab.dataset.tab);
+    savePreference('activeTab', tab.dataset.tab);
   }
 
   tabs.forEach(tab => {
@@ -338,7 +342,7 @@ function initReferenceBrowser() {
     activateTab(tabs[next]);
   });
 
-  const saved = sessionStorage.getItem(STORAGE_KEY);
+  const saved = loadPreference('activeTab');
   const initial = tabs.find(t => t.dataset.tab === saved) ?? tabs[0];
   activateTab(initial);
 
